@@ -20,12 +20,15 @@ import org.eclipse.jetty.websocket.WebSocketServlet;
  */
 public final class WebSocketProxy {
 	public static SpecialCommandSet itsSpecialCommandSet;
+	public static String MESSAGE_NO_PORT_SPECIFIED = "invalid properties(no port specified)";
+	public static String PROPERTY_PORT = "Port";
+	public static String FILENAME_PROPERTY = "WebSocketProxy.properties";
 	
     public static void main(String[] args) {
     	//parse property file
     	final Properties prop = new Properties();
     	try {
-    		FileInputStream fi = new FileInputStream("WebSocketProxy.properties");
+    		FileInputStream fi = new FileInputStream(FILENAME_PROPERTY);
     		prop.load(fi);
     		fi.close();
     	}
@@ -33,10 +36,12 @@ public final class WebSocketProxy {
     		e.printStackTrace();
     		System.exit(1);
     	}
+    	if (prop.getProperty(PROPERTY_PORT) == null) throw new RuntimeException(MESSAGE_NO_PORT_SPECIFIED);
+    	
     	itsSpecialCommandSet = new SpecialCommandSet(prop);
     	
     	//init server
-        Server server = new Server(8888);
+        Server server = new Server(Integer.parseInt(prop.getProperty(PROPERTY_PORT)));
         server.setStopAtShutdown(true);
         server.setGracefulShutdown(1000);
         ServletContextHandler root = new ServletContextHandler(server, "/", ServletContextHandler.SESSIONS);
@@ -45,7 +50,7 @@ public final class WebSocketProxy {
         root.addServlet(new ServletHolder(new WebSocketServlet() {
             private static final long serialVersionUID = 1L;
             @Override
-            public WebSocket doWebSocketConnect(HttpServletRequest arg0, String arg1) {
+            public WebSocket doWebSocketConnect(HttpServletRequest _, String __) {
                 return new WebSocketBridge(itsSpecialCommandSet);
             }
         }), "/ws/*");

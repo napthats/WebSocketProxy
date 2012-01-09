@@ -15,14 +15,14 @@ public class SpecialCommandSet {
 	private static final String MESSAGE_INVALID_SPECIALCOMMAND = "invalid properties(invalid SpecialCommand)";
 	private static final String SEPARATOR_COMMAND = ",";
 	private static final String SEPARATOR_ELEMENT = ":";
-	private static final String COMMANDRULE_CONNECT = "Connect";
-	private static final String COMMANDRULE_DISCONNECT = "Disconnect";	
-	private static final String COMMANDRULE_SPECIAL_COMMAND = "SpecialCommand";
+	private static final String PROPERTY_CONNECT = "Connect";
+	private static final String PROPERTY_DISCONNECT = "Disconnect";	
+	private static final String PROPERTY_SPECIAL_COMMAND = "SpecialCommand";
 	
 	//use "SpecialCommand" if it exists
 	//else use "Connect" and "Disconnect"
 	public SpecialCommandSet(Properties prop) {
-		String scStringSet = prop.getProperty(COMMANDRULE_SPECIAL_COMMAND);
+		String scStringSet = prop.getProperty(PROPERTY_SPECIAL_COMMAND);
 	    scSet = new ArrayList<SpecialCommandSet.SpecialCommand>();
 		if (scStringSet != null) {
 		    for (String scString : scStringSet.split(SEPARATOR_COMMAND)) {
@@ -30,8 +30,8 @@ public class SpecialCommandSet {
 		    }
 		}
 		else {
-			String connectStringSet = prop.getProperty(COMMANDRULE_CONNECT);
-			String disconnectStringSet = prop.getProperty(COMMANDRULE_DISCONNECT);
+			String connectStringSet = prop.getProperty(PROPERTY_CONNECT);
+			String disconnectStringSet = prop.getProperty(PROPERTY_DISCONNECT);
 			if (connectStringSet == null || disconnectStringSet == null) throw new RuntimeException(MESSAGE_INVALID_SPECIALCOMMAND);
 
 			for (String disconnectString: disconnectStringSet.split(SEPARATOR_COMMAND)) {
