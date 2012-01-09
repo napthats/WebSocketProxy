@@ -2,9 +2,16 @@ package com.napthats.websocket;
 
 import java.io.IOException;
 import org.eclipse.jetty.websocket.WebSocket;
-import java.util.ArrayList;
+
+import com.napthats.websocket.SpecialCommandSet.Func;
+import com.napthats.websocket.SpecialCommandSet.SpecialCommand;
 import com.napthats.websocket.SpecialCommandSet.Status;
 
+/**
+ * WebSocket bridge for each client
+ * @author napthats
+ *
+ */
 final class WebSocketBridge implements WebSocket.OnTextMessage {
     private Connection itsJsConnection = null;
     private ForwardingSocket itsForwardingSocket = null;
@@ -22,24 +29,25 @@ final class WebSocketBridge implements WebSocket.OnTextMessage {
 
     @Override
     public void onClose(int arg0, String arg1) {
-    	itsForwardingSocket.close();
-    	itsForwardingSocket = null;
-    	itsJsConnection.disconnect();
-    	itsJsConnection = null;
+    	disconnectServer();
+    	disconnectClient();
     }
     
+    //handling messages from a client
     @Override
     public void onMessage(String msg) {
+    	//connected to server allready
     	if (itsForwardingSocket != null && !itsForwardingSocket.isClosed()) {
-    		ArrayList<String> sc = itsSpecialCommandSet.findSpecialCommand(Status.ACTIVE, msg);
+    		SpecialCommand sc = itsSpecialCommandSet.findSpecialCommand(Status.ACTIVE, msg);
        		if (sc == null) itsForwardingSocket.sendToServer(msg);
-       		else if (sc.get(0).equals("disconnect")) disconnectServer();
+       		else if (sc.getInvokeMethod() == Func.DISCONNECT) disconnectServer();
     	}
+    	//not connected
     	else {
     		itsForwardingSocket = null;
-    		ArrayList<String> sc = itsSpecialCommandSet.findSpecialCommand(Status.NONACTIVE, msg);
+    		SpecialCommand sc = itsSpecialCommandSet.findSpecialCommand(Status.NONACTIVE, msg);
     		if (sc == null) return;
-    		else if (sc.get(0).equals("connect")) connectServer(sc.get(1), Integer.parseInt(sc.get(2)));
+    		else if (sc.getInvokeMethod() == Func.CONNECT) connectServer(sc.getOptionList().get(0), Integer.parseInt(sc.getOptionList().get(1)));
     	}
     }
     
@@ -48,6 +56,11 @@ final class WebSocketBridge implements WebSocket.OnTextMessage {
     	itsForwardingSocket = null;    	
     }
 
+    private void disconnectClient() {
+    	itsJsConnection.disconnect();
+    	itsJsConnection = null;  	
+    }    
+    
 	private void connectServer(String host, int port) {
 		itsForwardingSocket = new ForwardingSocket(host, port, new ForwardingSocket.RecvFromServer() {
 			@Override

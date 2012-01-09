@@ -8,6 +8,11 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
  
+/**
+ * send/recv messages to/from server
+ * @author napthats
+ *
+ */
 final class ForwardingSocket extends Thread {
     private Socket itsSocket = null;
     private BufferedReader itsReader;
@@ -37,9 +42,9 @@ final class ForwardingSocket extends Thread {
     
     public void close() {
 		try {
-        	itsReader.close();
-        	itsWriter.close();
-        	itsSocket.close();
+        	if (itsReader != null) itsReader.close();
+        	if (itsWriter != null) itsWriter.close();
+        	if (itsSocket != null) itsSocket.close();
 		}
 		catch (IOException e) {
 			e.printStackTrace();
