@@ -8,7 +8,7 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
  
-public class ForwardingSocket extends Thread {
+final class ForwardingSocket extends Thread {
     private Socket itsSocket = null;
     private BufferedReader itsReader;
     private BufferedWriter itsWriter;
