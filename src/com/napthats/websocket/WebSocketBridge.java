@@ -52,12 +52,12 @@ final class WebSocketBridge implements WebSocket.OnTextMessage {
     }
     
     private void disconnectServer() {
-    	itsForwardingSocket.close();
+    	if (itsForwardingSocket != null) itsForwardingSocket.close();
     	itsForwardingSocket = null;    	
     }
 
     private void disconnectClient() {
-    	itsJsConnection.disconnect();
+    	if (itsJsConnection != null) itsJsConnection.disconnect();
     	itsJsConnection = null;  	
     }    
     
@@ -71,6 +71,6 @@ final class WebSocketBridge implements WebSocket.OnTextMessage {
 	}
 
     private void send(String msg) throws IOException {
-        itsJsConnection.sendMessage(msg);
+    	itsJsConnection.sendMessage(msg);
     }
 }

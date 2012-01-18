@@ -24,7 +24,8 @@ final class ForwardingSocket extends Thread {
     	itsRecvFromServer = RFS;
         try {
     	    itsSocket = new Socket(host, port);
-		    itsReader = new BufferedReader(new InputStreamReader(itsSocket.getInputStream()));
+    	    itsReader = new BufferedReader(new InputStreamReader(itsSocket.getInputStream(), "ISO-8859-1"));
+    	    //itsReader = new BufferedReader(new InputStreamReader(itsSocket.getInputStream()));
      		itsWriter = new BufferedWriter(new OutputStreamWriter(itsSocket.getOutputStream()));
         } catch (UnknownHostException e) {
         	close();
