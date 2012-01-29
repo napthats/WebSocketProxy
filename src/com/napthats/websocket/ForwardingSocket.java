@@ -14,19 +14,23 @@ import java.net.UnknownHostException;
  *
  */
 final class ForwardingSocket extends Thread {
+	private static final String CHARSET_PHIDM = "phi_dm";
     private Socket itsSocket = null;
     private BufferedReader itsReader;
     private BufferedWriter itsWriter;
     private RecvFromServer itsRecvFromServer;
+    private String itsCharsetName;
     private boolean isClosed = false;
         
-    public ForwardingSocket(String host, int port, RecvFromServer RFS) {
+    public ForwardingSocket(String host, int port, String charsetName, RecvFromServer RFS) {
     	itsRecvFromServer = RFS;
+    	itsCharsetName = charsetName;
         try {
     	    itsSocket = new Socket(host, port);
-    	    itsReader = new BufferedReader(new InputStreamReader(itsSocket.getInputStream(), "ISO-8859-1"));
-    	    //itsReader = new BufferedReader(new InputStreamReader(itsSocket.getInputStream()));
-     		itsWriter = new BufferedWriter(new OutputStreamWriter(itsSocket.getOutputStream()));
+    	    String inputCharsetName = itsCharsetName.equals(CHARSET_PHIDM) ? "ISO-8859-1" : itsCharsetName;
+    	    String outputCharsetName = itsCharsetName.equals(CHARSET_PHIDM) ? "SJIS" : itsCharsetName;
+    	    itsReader = new BufferedReader(new InputStreamReader(itsSocket.getInputStream(), inputCharsetName));
+     		itsWriter = new BufferedWriter(new OutputStreamWriter(itsSocket.getOutputStream(), outputCharsetName));
         } catch (UnknownHostException e) {
         	close();
             e.printStackTrace();
@@ -59,6 +63,8 @@ final class ForwardingSocket extends Thread {
 				while (true) {
 					String msg = itsReader.readLine();
 					if (msg == null) break;
+					//hack for phi_dm
+					if (itsCharsetName.equals(CHARSET_PHIDM) &&  msg.length() != 0 && msg.charAt(0) != '#') msg = new String(msg.getBytes("ISO-8859-1"), "SJIS");
 					itsRecvFromServer.recvFromServer(msg);
 				}
 			} catch(IOException e) {

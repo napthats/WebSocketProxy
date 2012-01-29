@@ -16,10 +16,12 @@ final class WebSocketBridge implements WebSocket.OnTextMessage {
     private Connection itsJsConnection = null;
     private ForwardingSocket itsForwardingSocket = null;
     private final SpecialCommandSet itsSpecialCommandSet;
+    private final String itsCharsetName;
     
-    public WebSocketBridge(SpecialCommandSet scSet) {
+    public WebSocketBridge(SpecialCommandSet scSet, String charsetName) {
     	super();
     	itsSpecialCommandSet = scSet;
+    	itsCharsetName = charsetName;
     }
     
     @Override
@@ -62,7 +64,7 @@ final class WebSocketBridge implements WebSocket.OnTextMessage {
     }    
     
 	private void connectServer(String host, int port) {
-		itsForwardingSocket = new ForwardingSocket(host, port, new ForwardingSocket.RecvFromServer() {
+		itsForwardingSocket = new ForwardingSocket(host, port, itsCharsetName, new ForwardingSocket.RecvFromServer() {
 			@Override
 			public void recvFromServer(String msg) throws IOException {
 				send(msg);

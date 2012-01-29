@@ -20,9 +20,10 @@ import org.eclipse.jetty.websocket.WebSocketServlet;
  */
 public final class WebSocketProxy {
 	public static SpecialCommandSet itsSpecialCommandSet;
-	public static String MESSAGE_NO_PORT_SPECIFIED = "invalid properties(no port specified)";
-	public static String PROPERTY_PORT = "Port";
-	public static String FILENAME_PROPERTY = "WebSocketProxy.properties";
+	private static final String MESSAGE_NO_PORT_SPECIFIED = "invalid properties(no port specified)";
+	private static final String PROPERTY_PORT = "Port";
+	private static final String PROPERTY_CHARSET = "Charset";
+	private static final String FILENAME_PROPERTY = "WebSocketProxy.properties";
 	
     public static void main(String[] args) {
     	//parse property file
@@ -51,7 +52,7 @@ public final class WebSocketProxy {
             private static final long serialVersionUID = 1L;
             @Override
             public WebSocket doWebSocketConnect(HttpServletRequest _, String __) {
-                return new WebSocketBridge(itsSpecialCommandSet);
+                return new WebSocketBridge(itsSpecialCommandSet, prop.getProperty(PROPERTY_CHARSET, "ISO-8859-1"));
             }
         }), "/ws/*");
 

@@ -20,12 +20,14 @@ The "WebSocketProxy.properties" file format is following.
   Port=PORT_NUMBER
   Connect=CONNECT_COMMAND:HOST_NAME:PORT_NUMBER, ...
   Disconnect=DISCONNECT_COMMAND, ...
+  Charset=CHARSET_NAME_IN_JAVA, ...
 
 For example,
 
   Port=8888
   Connect=$open:localhost:20017,$open2:localhost:20018
   Disconnect=$close,$close2
+  Charset=UTF-8
 
 WebSocketProxy handles clients' special commands as above. It connect and disconnect clients to the host when they send specified commands ("$open", "$open2", "$close" or "$close2" in this case). Connect command isn't available if they are already connected (the same applies to disconnect command). It relay all other messages to/from clients.
 Additionally, JavaScript client samples are in the "jssample" directory.
